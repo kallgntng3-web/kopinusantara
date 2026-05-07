@@ -9,10 +9,9 @@ import {
   ExternalLink,
   FileText,
   Download,
-  Code2,
 } from "lucide-react";
+
 import { useAdmin } from "@/context/AdminContext";
-import { downloadSourceCode } from "@/utils/downloadSourceCode";
 
 const links = [
   { path: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -46,17 +45,24 @@ export default function AdminSidebar() {
       reservations: state.reservations,
       messages: state.messages,
     };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
+
     const url = URL.createObjectURL(blob);
+
     const a = document.createElement("a");
     a.href = url;
-    a.download = `kopi-nusantara-data-${new Date().toISOString().split("T")[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+    a.download = `kopi-nusantara-data-${new Date()
+      .toISOString()
+      .split("T")[0]}.json`;
 
-  const handleDownloadCode = async () => {
-    await downloadSourceCode();
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -69,9 +75,15 @@ export default function AdminSidebar() {
         >
           <Coffee size={14} className="text-espresso" />
         </div>
+
         <div>
-          <p className="font-display text-sm text-gray-900 leading-none">Kopi Nusantara</p>
-          <p className="font-ui text-[10px] text-gray-400 tracking-widest uppercase mt-0.5">Admin Panel</p>
+          <p className="font-display text-sm text-gray-900 leading-none">
+            Kopi Nusantara
+          </p>
+
+          <p className="font-ui text-[10px] text-gray-400 tracking-widest uppercase mt-0.5">
+            Admin Panel
+          </p>
         </div>
       </div>
 
@@ -79,6 +91,7 @@ export default function AdminSidebar() {
       <nav className="flex-1 px-3 py-4 flex flex-col gap-1 overflow-y-auto">
         {links.map((link) => {
           const active = isActive(link);
+
           return (
             <button
               key={link.path}
@@ -89,23 +102,34 @@ export default function AdminSidebar() {
                   : "text-gray-500 hover:bg-gray-50 hover:text-gray-800"
               }`}
             >
-              {/* Active indicator */}
               {active && (
                 <span
                   className="absolute left-0 top-1 bottom-1 w-0.5 rounded-r-full"
                   style={{ background: "hsl(var(--gold))" }}
                 />
               )}
+
               <link.icon
                 size={17}
-                className={active ? "text-amber-700" : "text-gray-400 group-hover:text-gray-600"}
+                className={
+                  active
+                    ? "text-amber-700"
+                    : "text-gray-400 group-hover:text-gray-600"
+                }
               />
-              <span className="font-ui text-sm font-medium flex-1">{link.label}</span>
 
-              {/* Unread badge */}
+              <span className="font-ui text-sm font-medium flex-1">
+                {link.label}
+              </span>
+
               {link.path === "/admin/messages" && unreadCount > 0 && (
-                <span className="flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-white text-[10px] font-bold px-1"
-                  style={{ background: "hsl(var(--gold))", color: "hsl(var(--espresso))" }}>
+                <span
+                  className="flex items-center justify-center min-w-[18px] h-[18px] rounded-full text-[10px] font-bold px-1"
+                  style={{
+                    background: "hsl(var(--gold))",
+                    color: "hsl(var(--espresso))",
+                  }}
+                >
                   {unreadCount}
                 </span>
               )}
@@ -125,6 +149,7 @@ export default function AdminSidebar() {
           <ExternalLink size={16} />
           <span className="font-ui text-sm">Lihat Website</span>
         </a>
+
         <button
           onClick={handleDownloadData}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-amber-700 hover:bg-amber-50 transition-all duration-200 w-full"
@@ -132,13 +157,7 @@ export default function AdminSidebar() {
           <Download size={16} />
           <span className="font-ui text-sm">Download Data (JSON)</span>
         </button>
-        <button
-          onClick={handleDownloadCode}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-blue-700 hover:bg-blue-50 transition-all duration-200 w-full"
-        >
-          <Code2 size={16} />
-          <span className="font-ui text-sm">Download Source Code</span>
-        </button>
+
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all duration-200 w-full"
